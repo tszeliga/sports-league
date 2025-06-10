@@ -1,28 +1,18 @@
 <template>
-  <div class="leagues-grid">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
     <LeagueCard
-      v-for="league in leagues"
+      v-for="(league, index) in leagues"
       :key="league.idLeague"
       :league="league"
+      class="group animation-delay-100"
       @click="$emit('league-click', $event)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-interface League {
-  idLeague: string;
-  strLeague: string;
-  strSport: string;
-  strLeagueAlternate?: string;
-}
+import type { LeaguesGridProps, LeaguesGridEmits } from '../types/components';
 
-interface Props {
-  leagues: League[];
-}
-
-defineProps<Props>();
-defineEmits<{
-  'league-click': [leagueId: string]
-}>();
+defineProps<LeaguesGridProps>();
+defineEmits<LeaguesGridEmits>();
 </script>

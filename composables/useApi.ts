@@ -1,56 +1,129 @@
-interface League {
-  idLeague: string;
-  strLeague: string;
-  strSport: string;
-  strLeagueAlternate?: string;
-}
+import { LRUCache } from 'lru-cache';
+import type { League, Season, ApiResponse, UseApiReturn } from '~/types';
 
-interface Season {
-  idSeason: string;
-  strSeason: string;
-  strSeasonBadge?: string;
-}
+// Simple cache with LRU eviction
+const cache = new LRUCache<string, any>({
+  max: 100, // Store up to 100 items
+  ttl: 10 * 60 * 1000, // 10 minutes TTL
+});
 
-interface ApiResponse<T> {
-  leagues?: T[];
-  seasons?: T[];
-}
+const BASE_URL = 'https://www.thesportsdb.com/api/v1/json/3';
 
-const cache = new Map<string, any>();
+// Simple fetch with timeout
+async function fetchData<T>(url: string): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-export const useApi = () => {
-  const fetchWithCache = async <T>(url: string): Promise<T> => {
-    if (cache.has(url)) {
-      return cache.get(url);
-    }
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
       }
-      const data = await response.json();
-      cache.set(url, data);
-      return data;
-    } catch (error) {
-      console.error('API request failed:', error);
-      throw error;
-    }
-  };
+    });
 
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout');
+      }
+      if (error.name === 'TypeError') {
+        throw new Error('Network error');
+      }
+    }
+    throw error;
+  }
+}
+
+// Fetch with cache
+async function fetchWithCache<T>(endpoint: string): Promise<T> {
+  const cacheKey = endpoint;
+  
+  // Check cache first
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) as T;
+  }
+
+  // Fetch from API
+  const url = `${BASE_URL}/${endpoint}`;
+  const data = await fetchData<T>(url);
+  
+  // Cache the result
+  cache.set(cacheKey, data);
+  
+  return data;
+}
+
+export const useApi = (): UseApiReturn => {
   const fetchLeagues = async (): Promise<League[]> => {
-    const data = await fetchWithCache<ApiResponse<League>>('https://www.thesportsdb.com/api/v1/json/3/all_leagues.php');
-    return data.leagues || [];
+    try {
+      const data = await fetchWithCache<ApiResponse<League>>('all_leagues.php');
+      
+      const leagues = data.leagues || [];
+      
+      // Simple validation - just check required fields exist
+      return leagues.filter(league => 
+        league?.idLeague && 
+        league?.strLeague && 
+        league?.strSport
+      );
+    } catch (error) {
+      throw new Error('Failed to fetch leagues');
+    }
   };
 
   const fetchSeasonBadge = async (leagueId: string): Promise<Season | null> => {
-    const data = await fetchWithCache<ApiResponse<Season>>(`https://www.thesportsdb.com/api/v1/json/3/search_all_seasons.php?badge=1&id=${leagueId}`);
-    const seasons = data.seasons || [];
-    return seasons.find(season => season.strSeasonBadge) || seasons[0] || null;
+    if (!leagueId) {
+      throw new Error('League ID is required');
+    }
+
+    try {
+      const endpoint = `search_all_seasons.php?badge=1&id=${encodeURIComponent(leagueId)}`;
+      const data = await fetchWithCache<ApiResponse<Season>>(endpoint);
+      
+      const seasons = data.seasons || [];
+      
+      if (seasons.length === 0) {
+        return null;
+      }
+
+      // Find season with badge, or return first season
+      const seasonWithBadge = seasons.find(season => 
+        season?.strBadge && 
+        season.strBadge !== 'null' &&
+        season.strBadge.startsWith('http')
+      );
+      
+      return seasonWithBadge || seasons[0] || null;
+    } catch (error) {
+      throw new Error('Failed to fetch season badge');
+    }
+  };
+
+  const clearCache = (): void => {
+    cache.clear();
+  };
+
+  const getCacheStats = () => {
+    return {
+      size: cache.size,
+      keys: Array.from(cache.keys())
+    };
   };
 
   return {
     fetchLeagues,
-    fetchSeasonBadge
+    fetchSeasonBadge,
+    clearCache,
+    getCacheStats
   };
 };

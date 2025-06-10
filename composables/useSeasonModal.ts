@@ -1,10 +1,6 @@
-interface Season {
-  idSeason: string;
-  strSeason: string;
-  strSeasonBadge?: string;
-}
+import type { Season, UseSeasonModalReturn } from '~/types';
 
-export const useSeasonModal = () => {
+export const useSeasonModal = (): UseSeasonModalReturn => {
   const { fetchSeasonBadge } = useApi();
   
   const modalVisible = ref(false);
@@ -12,7 +8,7 @@ export const useSeasonModal = () => {
   const modalError = ref<string | null>(null);
   const selectedSeason = ref<Season | null>(null);
 
-  const openModal = async (leagueId: string) => {
+  const openModal = async (leagueId: string): Promise<void> => {
     modalVisible.value = true;
     modalLoading.value = true;
     modalError.value = null;
@@ -23,13 +19,12 @@ export const useSeasonModal = () => {
       selectedSeason.value = season;
     } catch (err) {
       modalError.value = 'Failed to load season badge. Please try again.';
-      console.error('Error fetching season badge:', err);
     } finally {
       modalLoading.value = false;
     }
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     modalVisible.value = false;
     selectedSeason.value = null;
     modalError.value = null;

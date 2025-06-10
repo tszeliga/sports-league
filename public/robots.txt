@@ -1,1 +1,8 @@
+User-agent: *
+Allow: /
 
+# Sitemap
+Sitemap: https://yourdomain.com/sports-league/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

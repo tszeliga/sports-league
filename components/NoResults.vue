@@ -1,15 +1,13 @@
 <template>
-  <div class="no-results">
+  <div class="text-center py-15 text-white text-xl font-medium opacity-90">
     {{ message }}
   </div>
 </template>
 
 <script setup lang="ts">
-interface Props {
-  message?: string;
-}
+import type { NoResultsProps } from '../types/components';
 
-withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<NoResultsProps>(), {
   message: 'No results found.'
 });
 </script>

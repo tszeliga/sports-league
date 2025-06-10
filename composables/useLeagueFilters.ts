@@ -1,19 +1,14 @@
-interface League {
-  idLeague: string;
-  strLeague: string;
-  strSport: string;
-  strLeagueAlternate?: string;
-}
+import type { League, UseLeagueFiltersReturn } from '~/types';
 
-export const useLeagueFilters = (leagues: Ref<League[]>) => {
+export const useLeagueFilters = (leagues: Readonly<Ref<League[]>>): UseLeagueFiltersReturn => {
   const searchQuery = ref('');
   const selectedSport = ref('');
 
-  const allSports = computed(() => {
+  const allSports = computed((): string[] => {
     return leagues.value.map(league => league.strSport);
   });
 
-  const filteredLeagues = computed(() => {
+  const filteredLeagues = computed((): League[] => {
     let filtered = leagues.value;
 
     // Filter by search query
@@ -33,11 +28,11 @@ export const useLeagueFilters = (leagues: Ref<League[]>) => {
     return filtered;
   });
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query: string): void => {
     searchQuery.value = query;
   };
 
-  const handleSportFilter = (sport: string) => {
+  const handleSportFilter = (sport: string): void => {
     selectedSport.value = sport;
   };
 

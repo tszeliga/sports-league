@@ -1,5 +1,5 @@
 <template>
-  <div class="filters">
+  <div class="glass-card p-6 mb-10 flex flex-wrap gap-5 items-center animate-slide-in-up">
     <SearchBar @search="$emit('search', $event)" />
     <SportFilter
       :sports="sports"
@@ -9,13 +9,8 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
-  sports: string[];
-}
+import type { FilterSectionProps, FilterSectionEmits } from '~/types';
 
-defineProps<Props>();
-defineEmits<{
-  search: [query: string];
-  'sport-filter': [sport: string];
-}>();
+defineProps<FilterSectionProps>();
+defineEmits<FilterSectionEmits>();
 </script>
