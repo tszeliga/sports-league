@@ -5,7 +5,7 @@
     aria-live="polite"
   >
     <div class="flex items-center justify-center gap-3 mb-4">
-      <div class="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin-slow"></div>
+      <div class="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin-slow"/>
       <span>{{ message }}</span>
     </div>
   </div>

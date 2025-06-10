@@ -13,16 +13,16 @@
       spellcheck="false"
       @input="handleSearch"
       @keydown.escape="clearSearch"
-    />
+    >
     <div 
       v-if="searchValue" 
       class="absolute right-4 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center cursor-pointer text-sm text-primary-600 transition-all duration-300 hover:bg-primary-200 hover:scale-110"
-      @click="clearSearch"
-      @keydown.enter="clearSearch"
-      @keydown.space="clearSearch"
       tabindex="0"
       role="button"
       aria-label="Clear search"
+      @click="clearSearch"
+      @keydown.enter="clearSearch"
+      @keydown.space="clearSearch"
     >
       ✕
     </div>

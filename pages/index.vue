@@ -68,8 +68,8 @@ const {
 const handleLeagueClick = async (leagueId: string): Promise<void> => {
   try {
     await openModal(leagueId);
-  } catch (err) {
-    // Error is handled in the modal composable
+  } catch {
+    console.error("Failed to open modal for league:", leagueId);
   }
 };
 
@@ -84,22 +84,22 @@ onMounted(async () => {
 
 // Meta tags
 useHead({
-  title: 'Sports Leagues Directory - Browse Global Sports Leagues',
+  title: "Sports Leagues Directory - Browse Global Sports Leagues",
   meta: [
     {
-      name: 'description',
+      name: "description",
       content:
-        'Discover and explore sports leagues from around the world. Search and filter by sport type to find your favorite leagues.',
+        "Discover and explore sports leagues from around the world. Search and filter by sport type to find your favorite leagues.",
     },
     {
-      name: 'keywords',
+      name: "keywords",
       content:
-        'sports, leagues, football, basketball, soccer, baseball, hockey, tennis',
+        "sports, leagues, football, basketball, soccer, baseball, hockey, tennis",
     },
-    { property: 'og:title', content: 'Sports Leagues Directory' },
+    { property: "og:title", content: "Sports Leagues Directory" },
     {
-      property: 'og:description',
-      content: 'Browse and filter sports leagues from around the world',
+      property: "og:description",
+      content: "Browse and filter sports leagues from around the world",
     },
   ],
 });

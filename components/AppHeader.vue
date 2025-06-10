@@ -5,7 +5,7 @@
       <span class="text-gradient">Sports Leagues Directory</span>
       <div
         class="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-white to-transparent rounded-full"
-      ></div>
+      />
     </h1>
     <p class="text-white/95 text-xl font-light tracking-wide">
       Discover sports leagues from around the world

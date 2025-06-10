@@ -1,8 +1,8 @@
-import type { Season, UseSeasonModalReturn } from '~/types';
+import type { Season, UseSeasonModalReturn } from "~/types";
 
 export const useSeasonModal = (): UseSeasonModalReturn => {
   const { fetchSeasonBadge } = useApi();
-  
+
   const modalVisible = ref(false);
   const modalLoading = ref(false);
   const modalError = ref<string | null>(null);
@@ -17,8 +17,8 @@ export const useSeasonModal = (): UseSeasonModalReturn => {
     try {
       const season = await fetchSeasonBadge(leagueId);
       selectedSeason.value = season;
-    } catch (err) {
-      modalError.value = 'Failed to load season badge. Please try again.';
+    } catch {
+      modalError.value = "Failed to load season badge. Please try again.";
     } finally {
       modalLoading.value = false;
     }
@@ -36,6 +36,6 @@ export const useSeasonModal = (): UseSeasonModalReturn => {
     modalError: readonly(modalError),
     selectedSeason: readonly(selectedSeason),
     openModal,
-    closeModal
+    closeModal,
   };
 };
